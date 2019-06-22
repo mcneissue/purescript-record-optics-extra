@@ -4,21 +4,17 @@ import Prelude
 
 import Data.Lens (view, set)
 import Data.Lens.Remap (remap)
+import Data.Symbol (SProxy(..))
 import Effect (Effect)
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (run)
-import Type.Data.Row (RProxy(..))
-
-p :: forall r. RProxy r
-p = RProxy
-
 
 main :: Effect Unit
 main = run [consoleReporter] do
   let
-    l = remap (p :: _ ("foo" :: _ "bar"))
+    l = remap { "foo": SProxy :: _ "bar" }
     s = { foo: 42, baz: "quux" }
     b = { bar: "potato" }
 
