@@ -33,23 +33,20 @@ instance remapCons ::
   where
   remapRL r = iso to from
     where
-    r' = RLProxy :: _ r'
     k = SProxy :: _ k
     l = SProxy :: _ l
+    r' = RLProxy :: _ r'
+    rec = remapRL r'
 
     to :: { | s } -> { | a }
     to s = insert l v (view rec s')
       where
-      rec :: Iso { | s' } { | t' } { | a' } { | b' }
-      rec = remapRL r'
       v = get k s
       s' = delete k s
 
     from :: { | b } -> { | t }
-    from b = insert k u (view rec b')
+    from b = insert k u (view (re rec) b')
       where
-      rec :: Iso { | b' } { | a' } { | t' } { | s' }
-      rec = re (remapRL r')
       u = get l b
       b' = delete l b
 
