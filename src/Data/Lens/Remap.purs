@@ -13,7 +13,7 @@ import Type.Row (class Cons, class Lacks) as R
 
 class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a b, b -> t
   where
-  remap       :: RLProxy rl -> Lens { | s } { | t } { | a } { | b }
+  remap :: RLProxy rl -> Lens { | s } { | t } { | a } { | b }
 
 instance remapNil :: Remap Nil s s () ()
   where
@@ -32,19 +32,9 @@ instance remapCons ::
   ) =>
   Remap (Cons k (SProxy l) r') s t a b
   where
-
   remap r = lens (view r) (update r)
     where
-    r' :: RLProxy r'
-    r' = RLProxy
-
-    k :: SProxy k
-    k = SProxy
-
-    l :: SProxy l
-    l = SProxy
-
-    view :: (RLProxy (Cons k (SProxy l) r')) -> { | s } -> { | a }
+    view :: _ -> { | s } -> { | a }
     view _ s = insert l v (L.view (remap r') s')
       where
       v :: v
@@ -53,7 +43,7 @@ instance remapCons ::
       s' :: { | s' }
       s' = delete k s
 
-    update :: (RLProxy (Cons k (SProxy l) r')) -> { | s } -> { | b } -> { | t }
+    update :: _ -> { | s } -> { | b } -> { | t }
     update _ s b = insert k u (L.set (remap r') b' s')
       where
       u :: u
@@ -64,3 +54,12 @@ instance remapCons ::
 
       b' :: { | b' }
       b' = delete l b
+
+    r' :: RLProxy r'
+    r' = RLProxy
+
+    k :: SProxy k
+    k = SProxy
+
+    l :: SProxy l
+    l = SProxy
