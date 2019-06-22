@@ -31,7 +31,7 @@ instance remapCons ::
 
   , Remap r' s' t' a' b'
   ) =>
-  Remap (Cons k (SProxy l) r') s t a b
+  Remap (Cons k (f l) r') s t a b
   where
   remapRL r = lens view update
     where
