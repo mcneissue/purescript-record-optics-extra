@@ -38,16 +38,17 @@ instance remapCons ::
     l = SProxy :: _ l
 
     to :: { | s } -> { | a }
-    to s = insert l v (view (remapRL r') s')
+    to s = insert l v (view rec s')
       where
+      rec = remapRL r'
       v = get k s
       s' = delete k s
 
     from :: { | b } -> { | t }
-    from b = insert k u (view l' b')
+    from b = insert k u (view rec b')
       where
-      l' :: Iso { | b' } { | a' } { | t' } { | s' }
-      l' = re (remapRL r')
+      rec :: Iso { | b' } { | a' } { | t' } { | s' }
+      rec = re (remapRL r')
       u = get l b
       b' = delete l b
 

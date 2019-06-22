@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
 
-import Data.Lens (Iso, re, set, view)
+import Data.Lens (re, set, view)
 import Data.Lens.Remap (remap)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
@@ -11,7 +11,9 @@ import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (run)
 
-l = remap { "foo": SProxy :: _ "bar" }
+l = remap { "foo": bar }
+  where
+  bar = SProxy :: _ "bar"
 
 main :: Effect Unit
 main = run [consoleReporter] do
