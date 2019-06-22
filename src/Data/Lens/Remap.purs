@@ -7,17 +7,18 @@ import Data.Lens (view, set) as L
 import Data.Symbol (class IsSymbol)
 import Prim.RowList (Cons, Nil, kind RowList)
 import Record (delete, get, insert)
+import Type.Data.Row (RProxy)
 import Type.Data.RowList (RLProxy(..))
-import Type.Prelude (SProxy(..))
+import Type.Prelude (SProxy(..), class RowToList)
 import Type.Row (class Cons, class Lacks) as R
 
 class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a b, b -> t
   where
-  remap :: RLProxy rl -> Lens { | s } { | t } { | a } { | b }
+  remapRL :: RLProxy rl -> Lens { | s } { | t } { | a } { | b }
 
 instance remapNil :: Remap Nil s s () ()
   where
-  remap r = lens (const {}) (const)
+  remapRL r = lens (const {}) (const)
 
 instance remapCons ::
   ( IsSymbol k
@@ -32,10 +33,10 @@ instance remapCons ::
   ) =>
   Remap (Cons k (SProxy l) r') s t a b
   where
-  remap r = lens view update
+  remapRL r = lens view update
     where
     view :: { | s } -> { | a }
-    view s = insert l v (L.view (remap r') s')
+    view s = insert l v (L.view (remapRL r') s')
       where
       v :: v
       v = get k s
@@ -44,7 +45,7 @@ instance remapCons ::
       s' = delete k s
 
     update :: { | s } -> { | b } -> { | t }
-    update s b = insert k u (L.set (remap r') b' s')
+    update s b = insert k u (L.set (remapRL r') b' s')
       where
       u :: u
       u = get l b
@@ -55,11 +56,14 @@ instance remapCons ::
       b' :: { | b' }
       b' = delete l b
 
-    r' :: RLProxy r'
-    r' = RLProxy
+    r' = RLProxy :: _ r'
 
-    k :: SProxy k
-    k = SProxy
+    k = SProxy :: _ k
 
-    l :: SProxy l
-    l = SProxy
+    l = SProxy :: _ l
+
+rp2rlp :: forall r rl. RowToList r rl => RProxy r -> RLProxy rl
+rp2rlp _ = RLProxy :: _ rl
+
+remap :: forall r rl s t a b. RowToList r rl => Remap rl s t a b => RProxy r -> Lens { | s } { | t } { | a } { | b }
+remap r = remapRL (rp2rlp r)

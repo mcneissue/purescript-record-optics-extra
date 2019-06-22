@@ -7,16 +7,16 @@ import Data.Lens.Remap (remap)
 import Data.Symbol (SProxy)
 import Effect (Effect)
 import Effect.Class.Console (logShow)
-import Prim.RowList (Cons, Nil)
-import Type.Row (RLProxy(..))
+import Type.Data.Row (RProxy(..))
+
+p :: forall r. RProxy r
+p = RProxy
 
 main :: Effect Unit
 main = do
-  logShow $ testView
-  logShow $ testSet
+  logShow $ view l s
+  logShow $ set l b s
   where
-  l = remap (RLProxy :: RLProxy (Cons "foo" (SProxy "bar") Nil))
-
-  testView = view l { foo: 42, baz: "quux" }
-
-  testSet = set l { bar: "potato" } { foo: 42, baz: "quux" }
+  l = remap (p :: _ ("foo" :: SProxy "bar"))
+  s = { foo: 42, baz: "quux" }
+  b = { bar: "potato" }
