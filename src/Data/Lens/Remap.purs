@@ -32,10 +32,10 @@ instance remapCons ::
   ) =>
   Remap (Cons k (SProxy l) r') s t a b
   where
-  remap r = lens (view r) (update r)
+  remap r = lens view update
     where
-    view :: _ -> { | s } -> { | a }
-    view _ s = insert l v (L.view (remap r') s')
+    view :: { | s } -> { | a }
+    view s = insert l v (L.view (remap r') s')
       where
       v :: v
       v = get k s
@@ -43,8 +43,8 @@ instance remapCons ::
       s' :: { | s' }
       s' = delete k s
 
-    update :: _ -> { | s } -> { | b } -> { | t }
-    update _ s b = insert k u (L.set (remap r') b' s')
+    update :: { | s } -> { | b } -> { | t }
+    update s b = insert k u (L.set (remap r') b' s')
       where
       u :: u
       u = get l b
