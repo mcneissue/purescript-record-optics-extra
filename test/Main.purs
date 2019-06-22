@@ -19,10 +19,10 @@ main = run [consoleReporter] do
       let
         l = remap { "foo": SProxy :: _ "bar" }
         s = { foo: 42, baz: "quux" }
-        b = { bar: "potato" }
+        b = { bar: "potato", baz: "quux" }
 
       it "should view correctly" do
-        (view l s) `shouldEqual` { bar: 42 }
+        (view l s) `shouldEqual` { bar: 42, baz: "quux" }
 
       it "should update correctly" do
         (set l b s) `shouldEqual` { foo: "potato", baz: "quux" }

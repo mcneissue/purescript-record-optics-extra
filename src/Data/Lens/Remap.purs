@@ -2,8 +2,7 @@ module Data.Lens.Remap where
 
 import Prelude
 
-import Data.Lens (Lens, lens)
-import Data.Lens (view, set) as L
+import Data.Lens (Iso, iso, re, view)
 import Data.Symbol (class IsSymbol)
 import Prim.RowList (Cons, Nil, kind RowList)
 import Record (delete, get, insert)
@@ -13,11 +12,11 @@ import Type.Row (class Cons, class Lacks) as R
 
 class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a b, b -> t
   where
-  remapRL :: forall proxy. proxy rl -> Lens { | s } { | t } { | a } { | b }
+  remapRL :: forall proxy. proxy rl -> Iso { | s } { | t } { | a } { | b }
 
-instance remapNil :: Remap Nil s s () ()
+instance remapNil :: Remap Nil s s s s
   where
-  remapRL r = lens (const {}) (const)
+  remapRL r = iso identity identity
 
 instance remapCons ::
   ( IsSymbol k
@@ -32,27 +31,28 @@ instance remapCons ::
   ) =>
   Remap (Cons k (proxy l) r') s t a b
   where
-  remapRL r = lens view update
+  remapRL r = iso to from
     where
     r' = RLProxy :: _ r'
     k = SProxy :: _ k
     l = SProxy :: _ l
 
-    view :: { | s } -> { | a }
-    view s = insert l v (L.view (remapRL r') s')
+    to :: { | s } -> { | a }
+    to s = insert l v (view (remapRL r') s')
       where
       v = get k s
       s' = delete k s
 
-    update :: { | s } -> { | b } -> { | t }
-    update s b = insert k u (L.set (remapRL r') b' s')
+    from :: { | b } -> { | t }
+    from b = insert k u (view l' b')
       where
+      l' :: Iso { | b' } { | a' } { | t' } { | s' }
+      l' = re (remapRL r')
       u = get l b
-      s' = delete k s
       b' = delete l b
 
 rp2rlp :: forall r rl proxy. RowToList r rl => proxy r -> RLProxy rl
 rp2rlp _ = RLProxy :: _ rl
 
-remap :: forall r rl s t a b proxy. RowToList r rl => Remap rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
+remap :: forall r rl s t a b proxy. RowToList r rl => Remap rl s t a b => proxy r -> Iso { | s } { | t } { | a } { | b }
 remap r = remapRL (rp2rlp r)
