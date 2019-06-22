@@ -13,14 +13,13 @@ import Test.Spec.Runner (run)
 
 main :: Effect Unit
 main = run [consoleReporter] do
-  let
-    l = remap { "foo": SProxy :: _ "bar" }
-    s = { foo: 42, baz: "quux" }
-    b = { bar: "potato" }
 
   describe "purescript-remap" do
-
     describe "happy path" do
+      let
+        l = remap { "foo": SProxy :: _ "bar" }
+        s = { foo: 42, baz: "quux" }
+        b = { bar: "potato" }
 
       it "should view correctly" do
         (view l s) `shouldEqual` { bar: 42 }
