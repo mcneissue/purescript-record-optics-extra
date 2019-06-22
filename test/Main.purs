@@ -31,3 +31,7 @@ main = run [consoleReporter] do
 
       it "should update correctly" do
         (set l b s) `shouldEqual` { foo: "potato", baz: "quux" }
+
+    describe "laws" do
+      -- TODO: Fill these in
+      pure unit
