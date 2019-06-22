@@ -5,7 +5,9 @@ You can edit this file as you like.
 { name =
     "purescript-remap"
 , dependencies =
-    [ "psci-support", "profunctor-lenses" ]
+    [ "profunctor-lenses"
+    , "psci-support", "spec"
+    ]
 , packages =
     ./packages.dhall
 }
