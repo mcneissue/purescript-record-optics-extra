@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 
 import Data.Lens (re, set, view)
+import Data.Lens.Extract (extract)
 import Data.Lens.Remap (remap)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
@@ -11,28 +12,37 @@ import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (run)
 
-l = remap { "foo": bar }
+remapping = remap { "foo": bar }
   where
   bar = SProxy :: _ "bar"
+
+extraction = remapping >>> extract { foo: unit }
 
 main :: Effect Unit
 main = run [consoleReporter] do
 
   describe "purescript-remap" do
+    let
+      s = { foo: 42, baz: "quux" }
+      b = { bar: "potato", baz: "quarkle" }
+
     describe "remap" do
-      let
-        s = { foo: 42, baz: "quux" }
-        b = { bar: "potato", baz: "quarkle" }
+      it "should view" do
+        view remapping s `shouldEqual` { bar: 42, baz: "quux" }
 
-      it "should view correctly" do
-        view l s `shouldEqual` { bar: 42, baz: "quux" }
-
-      it "should update correctly" do
-        set l b s `shouldEqual` { foo: "potato", baz: "quarkle" }
+      it "should update" do
+        set remapping b s `shouldEqual` { foo: "potato", baz: "quarkle" }
 
       it "should cancel out its reverse" do
-        view (l <<< re l) s `shouldEqual` s
-        view (re l <<< l) b `shouldEqual` b
+        view (remapping <<< re remapping) s `shouldEqual` s
+        view (re remapping <<< remapping) b `shouldEqual` b
+
+    describe "extract" do
+      it "should extract subrecords" do
+        view extraction s `shouldEqual` { bar: 42 }
+
+      it "should update using subrecords" do
+        set extraction { bar: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
 
     describe "laws" do
       -- TODO: Fill these in
