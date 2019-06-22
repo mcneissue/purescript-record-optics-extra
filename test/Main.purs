@@ -23,14 +23,14 @@ main = run [consoleReporter] do
         b = { bar: "potato", baz: "quarkle" }
 
       it "should view correctly" do
-        (view l s) `shouldEqual` { bar: 42, baz: "quux" }
+        view l s `shouldEqual` { bar: 42, baz: "quux" }
 
       it "should update correctly" do
-        (set l b s) `shouldEqual` { foo: "potato", baz: "quarkle" }
+        set l b s `shouldEqual` { foo: "potato", baz: "quarkle" }
 
       it "should cancel out its reverse" do
-        (view (l <<< re l) s) `shouldEqual` s
-        (view (re l <<< l) b) `shouldEqual` b
+        view (l <<< re l) s `shouldEqual` s
+        view (re l <<< l) b `shouldEqual` b
 
     describe "laws" do
       -- TODO: Fill these in
