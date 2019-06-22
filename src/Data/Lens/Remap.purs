@@ -10,7 +10,7 @@ import Type.Data.RowList (RLProxy(..))
 import Type.Prelude (SProxy(..), class RowToList)
 import Type.Row (class Cons, class Lacks) as R
 
-class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a b, b -> t
+class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a, rl a -> s, rl b -> t, rl t -> b, rl a -> b, rl b -> a, rl s -> t, rl t -> s
   where
   remapRL :: forall proxy. proxy rl -> Iso { | s } { | t } { | a } { | b }
 
@@ -40,6 +40,7 @@ instance remapCons ::
     to :: { | s } -> { | a }
     to s = insert l v (view rec s')
       where
+      rec :: Iso { | s' } { | t' } { | a' } { | b' }
       rec = remapRL r'
       v = get k s
       s' = delete k s
