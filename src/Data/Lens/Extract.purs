@@ -25,7 +25,7 @@ instance extractCons ::
 
   , Extract r' s' a'
   ) =>
-  Extract (Cons k v xs) s a
+  Extract (Cons k v r') s a
   where
   extractRL _ = lens view set
     where
@@ -49,5 +49,5 @@ instance extractCons ::
 rp2rlp :: forall r rl proxy. R.RowToList r rl => proxy r -> RLProxy rl
 rp2rlp _ = RLProxy :: _ rl
 
-remap :: forall r rl s a proxy. R.RowToList r rl => Extract rl s a => proxy r -> Lens' { | s } { | a }
-remap r = extractRL (rp2rlp r)
+extract :: forall r rl s a proxy. R.RowToList r rl => Extract rl s a => proxy r -> Lens' { | s } { | a }
+extract r = extractRL (rp2rlp r)
