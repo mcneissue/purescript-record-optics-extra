@@ -11,12 +11,15 @@ import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (run)
+import Type.Data.Row (RProxy(..))
 
-remapping = remap { "foo": bar }
+scheme = { "foo": bar }
   where
   bar = SProxy :: _ "bar"
 
-extraction = remapping >>> extract { foo: unit }
+remapping = remap scheme
+extraction = extract scheme
+both = remapping >>> extraction
 
 main :: Effect Unit
 main = run [consoleReporter] do
@@ -39,10 +42,10 @@ main = run [consoleReporter] do
 
     describe "extract" do
       it "should extract subrecords" do
-        view extraction s `shouldEqual` { bar: 42 }
+        view both s `shouldEqual` { bar: 42 }
 
       it "should update using subrecords" do
-        set extraction { bar: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
+        set both { bar: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
 
     describe "laws" do
       -- TODO: Fill these in
