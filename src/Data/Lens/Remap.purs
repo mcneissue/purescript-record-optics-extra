@@ -1,6 +1,9 @@
 module Data.Lens.Remap where
 
-import Data.Lens (Lens', lens)
+import Prelude
+
+import Data.Lens (Lens, lens)
+import Data.Lens (view, set) as L
 import Data.Symbol (class IsSymbol)
 import Prim.RowList (Cons, Nil, kind RowList)
 import Record (delete, get, insert)
@@ -8,31 +11,29 @@ import Type.Data.RowList (RLProxy(..))
 import Type.Prelude (SProxy(..))
 import Type.Row (class Cons, class Lacks) as R
 
-class Remap (rl :: RowList) (i :: # Type) (o :: # Type) | rl i -> o
+class Remap (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a b, b -> t
   where
-  remapView :: RLProxy rl -> { | i } -> { | o }
-  remapUpdate :: RLProxy rl -> { | i } -> { | o } -> { | i }
-  remap :: RLProxy rl -> Lens' { | i } { | o }
+  remap       :: RLProxy rl -> Lens { | s } { | t } { | a } { | b }
 
-instance remapNil :: Remap Nil a ()
+instance remapNil :: Remap Nil s s () ()
   where
-  remapView _ _ = {}
-  remapUpdate _ s _ = s
-  remap r = lens (remapView r) (remapUpdate r)
+  remap r = lens (const {}) (const)
 
 instance remapCons ::
   ( IsSymbol k
   , IsSymbol l
 
-  , R.Cons k v i' i, R.Lacks k i'
-  , R.Cons l v o' o, R.Lacks l o'
+  , R.Cons k v s' s, R.Lacks k s'
+  , R.Cons k u t' t, R.Lacks k t'
+  , R.Cons l v a' a, R.Lacks l a'
+  , R.Cons l u b' b, R.Lacks l b'
 
-  , Remap r' i' o'
+  , Remap r' s' t' a' b'
   ) =>
-  Remap (Cons k (SProxy l) r') i o
+  Remap (Cons k (SProxy l) r') s t a b
   where
 
-  remapView _ i = insert l v (remapView r' i')
+  remap r = lens (view r) (update r)
     where
     r' :: RLProxy r'
     r' = RLProxy
@@ -43,30 +44,23 @@ instance remapCons ::
     l :: SProxy l
     l = SProxy
 
-    v :: v
-    v = get k i
+    view :: (RLProxy (Cons k (SProxy l) r')) -> { | s } -> { | a }
+    view _ s = insert l v (L.view (remap r') s')
+      where
+      v :: v
+      v = get k s
 
-    i' :: { | i' }
-    i' = delete k i
+      s' :: { | s' }
+      s' = delete k s
 
-  remapUpdate _ i o = insert k v (remapUpdate r' i' o')
-    where
-    r' :: RLProxy r'
-    r' = RLProxy
+    update :: (RLProxy (Cons k (SProxy l) r')) -> { | s } -> { | b } -> { | t }
+    update _ s b = insert k u (L.set (remap r') b' s')
+      where
+      u :: u
+      u = get l b
 
-    k :: SProxy k
-    k = SProxy
+      s' :: { | s' }
+      s' = delete k s
 
-    l :: SProxy l
-    l = SProxy
-
-    v :: v
-    v = get l o
-
-    i' :: { | i' }
-    i' = delete k i
-
-    o' :: { | o' }
-    o' = delete l o
-
-  remap r = lens (remapView r) (remapUpdate r)
+      b' :: { | b' }
+      b' = delete l b
