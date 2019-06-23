@@ -1,4 +1,4 @@
-# extra-record-optics
+# record-optics-extra
 
 ## How to install
 TODO: Uhhhhh
