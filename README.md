@@ -6,10 +6,9 @@ TODO: Uhhhhh
 ## How to use
 
 ```purescript
-> import Data.Lens.Record.Extract
-> import Data.Lens.Record.Remap
-> import Data.Symbol
 > import Data.Lens
+> import Data.Symbol
+> import Data.Lens.Record.Extra
 
 > view (remap { foo: SProxy :: _ "bar" }) { foo: 42, baz: "something" }
 { bar: 42, baz: "something" }
