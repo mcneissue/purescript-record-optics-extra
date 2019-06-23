@@ -1,4 +1,4 @@
-module Data.Lens.Extract where
+module Data.Lens.Record.Extract where
 
 import Data.Function (const)
 import Data.Lens (Lens, lens)

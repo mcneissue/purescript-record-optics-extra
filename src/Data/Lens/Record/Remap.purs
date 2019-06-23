@@ -1,4 +1,4 @@
-module Data.Lens.Remap where
+module Data.Lens.Record.Remap where
 
 import Prelude
 
