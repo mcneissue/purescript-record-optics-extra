@@ -3,8 +3,7 @@ module Test.Main where
 import Prelude
 
 import Data.Lens (re, set, view)
-import Data.Lens.Record.Extract (extract)
-import Data.Lens.Record.Remap (remap)
+import Data.Lens.Record.Extra (extract, remap)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
 import Test.Spec (describe, it)

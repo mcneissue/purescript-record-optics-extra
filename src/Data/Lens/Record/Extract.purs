@@ -3,6 +3,7 @@ module Data.Lens.Record.Extract where
 import Data.Function (const)
 import Data.Lens (Lens, lens)
 import Data.Lens (view, set) as L
+import Internal (rp2rlp)
 import Data.Symbol (class IsSymbol, SProxy(..))
 import Prim.RowList (Nil, Cons, kind RowList)
 import Record (get, insert, delete)
@@ -45,9 +46,6 @@ instance extractCons ::
       x = get k a
       a' = delete k a
       s' = delete k s
-
-rp2rlp :: forall r rl proxy. R.RowToList r rl => proxy r -> RLProxy rl
-rp2rlp _ = RLProxy :: _ rl
 
 extract :: forall r rl s t a b proxy. R.RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
 extract r = extractRL (rp2rlp r)

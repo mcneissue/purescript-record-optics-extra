@@ -3,6 +3,7 @@ module Data.Lens.Record.Remap where
 import Prelude
 
 import Data.Lens (Iso, iso, re, view)
+import Internal (rp2rlp)
 import Data.Symbol (class IsSymbol)
 import Prim.RowList (Cons, Nil, kind RowList)
 import Record (delete, get, insert)
@@ -49,9 +50,6 @@ instance remapCons ::
       where
       u = get l b
       b' = delete l b
-
-rp2rlp :: forall r rl proxy. RowToList r rl => proxy r -> RLProxy rl
-rp2rlp _ = RLProxy :: _ rl
 
 remap :: forall r rl s t a b proxy. RowToList r rl => Remap rl s t a b => proxy r -> Iso { | s } { | t } { | a } { | b }
 remap r = remapRL (rp2rlp r)
