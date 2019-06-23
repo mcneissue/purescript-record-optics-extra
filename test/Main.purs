@@ -11,7 +11,6 @@ import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (run)
-import Type.Data.Row (RProxy(..))
 
 scheme = { "foo": bar }
   where
@@ -42,9 +41,14 @@ main = run [consoleReporter] do
 
     describe "extract" do
       it "should extract subrecords" do
-        view both s `shouldEqual` { bar: 42 }
+        view extraction s `shouldEqual` { foo: 42 }
 
       it "should update using subrecords" do
+        set extraction { foo: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
+
+    describe "composition" do
+      it "should work properly" do
+        view both s `shouldEqual` { bar: 42 }
         set both { bar: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
 
     describe "laws" do
