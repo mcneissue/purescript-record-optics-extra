@@ -51,5 +51,5 @@ instance remapCons ::
       u = get l b
       b' = delete l b
 
-remap :: forall r rl s t a b proxy. RowToList r rl => Remap rl s t a b => proxy r -> Iso { | s } { | t } { | a } { | b }
-remap r = remapRL (rp2rlp r)
+remapped :: forall r rl s t a b proxy. RowToList r rl => Remap rl s t a b => proxy r -> Iso { | s } { | t } { | a } { | b }
+remapped r = remapRL (rp2rlp r)

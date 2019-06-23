@@ -47,5 +47,5 @@ instance extractCons ::
       a' = delete k a
       s' = delete k s
 
-extract :: forall r rl s t a b proxy. R.RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
-extract r = extractRL (rp2rlp r)
+extracted :: forall r rl s t a b proxy. R.RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
+extracted r = extractRL (rp2rlp r)
