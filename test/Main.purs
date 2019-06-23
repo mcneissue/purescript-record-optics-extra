@@ -16,9 +16,9 @@ scheme = { "foo": bar }
   where
   bar = SProxy :: _ "bar"
 
-remapping = remap scheme
-extraction = extract scheme
-both = remapping >>> extraction
+remapped = remap scheme
+extracted = extract scheme
+both = remapped >>> extracted
 
 main :: Effect Unit
 main = run [consoleReporter] do
@@ -30,21 +30,21 @@ main = run [consoleReporter] do
 
     describe "remap" do
       it "should view" do
-        view remapping s `shouldEqual` { bar: 42, baz: "quux" }
+        view remapped s `shouldEqual` { bar: 42, baz: "quux" }
 
       it "should update" do
-        set remapping b s `shouldEqual` { foo: "potato", baz: "quarkle" }
+        set remapped b s `shouldEqual` { foo: "potato", baz: "quarkle" }
 
       it "should cancel out its reverse" do
-        view (remapping <<< re remapping) s `shouldEqual` s
-        view (re remapping <<< remapping) b `shouldEqual` b
+        view (remapped <<< re remapped) s `shouldEqual` s
+        view (re remapped <<< remapped) b `shouldEqual` b
 
     describe "extract" do
       it "should extract subrecords" do
-        view extraction s `shouldEqual` { foo: 42 }
+        view extracted s `shouldEqual` { foo: 42 }
 
       it "should update using subrecords" do
-        set extraction { foo: "potato" } s `shouldEqual` { foo: "potato", baz: "quux" }
+        set extracted { foo: "potato" } s `shouldEqual` { foo: "potato", baz: "quux" }
 
     describe "composition" do
       it "should work properly" do
