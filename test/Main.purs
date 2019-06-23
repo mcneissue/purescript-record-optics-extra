@@ -15,7 +15,6 @@ import Test.Spec.Runner (run)
 scheme = { "foo": bar }
   where
   bar = SProxy :: _ "bar"
-
 remapped = remap scheme
 extracted = extract scheme
 both = remapped >>> extracted
