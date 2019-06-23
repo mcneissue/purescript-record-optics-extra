@@ -44,7 +44,7 @@ main = run [consoleReporter] do
         view extraction s `shouldEqual` { foo: 42 }
 
       it "should update using subrecords" do
-        set extraction { foo: 21 } s `shouldEqual` { foo: 21, baz: "quux" }
+        set extraction { foo: "potato" } s `shouldEqual` { foo: "potato", baz: "quux" }
 
     describe "composition" do
       it "should work properly" do

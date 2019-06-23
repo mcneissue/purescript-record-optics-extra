@@ -1,7 +1,7 @@
 module Data.Lens.Extract where
 
 import Data.Function (const)
-import Data.Lens (Lens', lens)
+import Data.Lens (Lens, lens)
 import Data.Lens (view, set) as L
 import Data.Symbol (class IsSymbol, SProxy(..))
 import Prim.RowList (Nil, Cons, kind RowList)
@@ -9,11 +9,11 @@ import Record (get, insert, delete)
 import Type.Data.RowList (RLProxy(..))
 import Type.Row (class Cons, class Lacks, class RowToList) as R
 
-class Extract (rl :: RowList) (s :: # Type) (a :: # Type) | rl s -> a, rl a -> s
+class Extract (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a, rl a -> s, rl b -> t, rl t -> b
   where
-  extractRL :: forall proxy. proxy rl -> Lens' { | s } { | a }
+  extractRL :: forall proxy. proxy rl -> Lens { | s } { | t } { | a } { | b }
 
-instance extractNil :: Extract Nil s ()
+instance extractNil :: Extract Nil s s () ()
   where
   extractRL _ = lens (const {}) const
 
@@ -22,10 +22,12 @@ instance extractCons ::
 
   , R.Cons k x s' s, R.Lacks k s'
   , R.Cons k x a' a, R.Lacks k a'
+  , R.Cons k y t' t, R.Lacks k t'
+  , R.Cons k y b' b, R.Lacks k b'
 
-  , Extract r' s' a'
+  , Extract r' s' t' a' b'
   ) =>
-  Extract (Cons k v r') s a
+  Extract (Cons k v r') s t a b
   where
   extractRL _ = lens view set
     where
@@ -33,13 +35,11 @@ instance extractCons ::
     r' = RLProxy :: _ r'
     rec = extractRL r'
 
-    view :: { | s } -> { | a }
     view s = insert k x (L.view rec s')
       where
       x = get k s
       s' = delete k s
 
-    set :: { | s } -> { | a } -> { | s }
     set s a = insert k x (L.set rec a' s')
       where
       x = get k a
@@ -49,5 +49,5 @@ instance extractCons ::
 rp2rlp :: forall r rl proxy. R.RowToList r rl => proxy r -> RLProxy rl
 rp2rlp _ = RLProxy :: _ rl
 
-extract :: forall r rl s a proxy. R.RowToList r rl => Extract rl s a => proxy r -> Lens' { | s } { | a }
+extract :: forall r rl s t a b proxy. R.RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
 extract r = extractRL (rp2rlp r)
