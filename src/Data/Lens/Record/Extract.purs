@@ -5,10 +5,10 @@ import Data.Lens (Lens, lens)
 import Data.Lens (view, set) as L
 import Internal (rp2rlp)
 import Data.Symbol (class IsSymbol, SProxy(..))
-import Prim.RowList (Nil, Cons, kind RowList)
+import Prim.RowList (Nil, Cons, kind RowList, class RowToList)
 import Record (get, insert, delete)
 import Type.Data.RowList (RLProxy(..))
-import Type.Row (class Cons, class Lacks, class RowToList) as R
+import Type.Row (class Cons, class Lacks) as R
 
 class Extract (rl :: RowList) (s :: # Type) (t :: # Type) (a :: # Type) (b :: # Type) | rl s -> a, rl a -> s, rl b -> t, rl t -> b
   where
@@ -47,5 +47,5 @@ instance extractCons ::
       a' = delete k a
       s' = delete k s
 
-extractedBy :: forall r rl s t a b proxy. R.RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
+extractedBy :: forall r rl s t a b proxy. RowToList r rl => Extract rl s t a b => proxy r -> Lens { | s } { | t } { | a } { | b }
 extractedBy r = extractRL (rp2rlp r)

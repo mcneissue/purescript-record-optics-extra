@@ -6,6 +6,7 @@ import Data.Lens (re, set, view)
 import Data.Lens.Record.Extra (extractedBy, remappedBy)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
+import Effect.Aff (launchAff_)
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter (consoleReporter)
@@ -19,7 +20,7 @@ extracted = extractedBy scheme
 both = remapped >>> extracted
 
 main :: Effect Unit
-main = run [consoleReporter] do
+main = launchAff_ $ run [consoleReporter] do
 
   describe "purescript-remap" do
     let
