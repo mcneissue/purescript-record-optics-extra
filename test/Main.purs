@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 
 import Data.Lens (re, set, view)
-import Data.Lens.Record.Extra (extracted, remapped) as E
+import Data.Lens.Record.Extra (extractedBy, remappedBy)
 import Data.Symbol (SProxy(..))
 import Effect (Effect)
 import Test.Spec (describe, it)
@@ -14,8 +14,8 @@ import Test.Spec.Runner (run)
 scheme = { "foo": bar }
   where
   bar = SProxy :: _ "bar"
-remapped = E.remapped scheme
-extracted = E.extracted scheme
+remapped = remappedBy scheme
+extracted = extractedBy scheme
 both = remapped >>> extracted
 
 main :: Effect Unit

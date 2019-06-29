@@ -4,5 +4,5 @@ module Data.Lens.Record.Extra
   )
 where
 
-import Data.Lens.Record.Remap (class Remap, remapped, remapRL)
-import Data.Lens.Record.Extract (class Extract, extracted, extractRL)
+import Data.Lens.Record.Remap (class Remap, remappedBy, remapRL)
+import Data.Lens.Record.Extract (class Extract, extractedBy, extractRL)
